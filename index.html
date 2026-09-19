@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Acharya Design Week</title>
+  <style>
+    :root {
+      --ink: #1d1b1a;
+      --muted: #817a73;
+      --line: #e9e3dc;
+      --paper: #f7f4ef;
+      --white: #fffdf9;
+      --plum: #5b2d4b;
+      --plum-dark: #44213a;
+      --coral: #e47761;
+      --mint: #d9f0e7;
+      --lavender: #ece5f6;
+      --gold: #f5d481;
+      --shadow: 0 18px 55px rgba(42, 26, 19, .11);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #ded9d3; color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button { font: inherit; border: 0; cursor: pointer; }
+    .shell { width: min(100%, 430px); min-height: 100vh; margin: 0 auto; background: var(--paper); position: relative; overflow: hidden; box-shadow: var(--shadow); }
+    .page { padding: 27px 20px 98px; display: none; animation: rise .28s ease; }
+    .page.active { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .eyebrow { color: var(--muted); text-transform: uppercase; letter-spacing: .16em; font-weight: 800; font-size: 10px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 35px; line-height: 1.03; letter-spacing: -.06em; }
+    h2 { font-size: 23px; letter-spacing: -.045em; }
+    h3 { font-size: 15px; letter-spacing: -.02em; }
+    .topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .mark { width: 34px; height: 34px; border-radius: 12px 12px 12px 4px; background: var(--plum); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 15px; }
+    .brand-name { font-size: 12px; font-weight: 800; line-height: 1.05; }
+    .brand-name span { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: .05em; }
+    .avatar { border: 1px solid #decfc4; width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; background: #f2c5a9; color: var(--plum); font-size: 12px; font-weight: 900; }
+    .hero { margin-bottom: 19px; }
+    .hero h1 span { color: var(--coral); }
+    .hero p { margin-top: 13px; color: var(--muted); font-size: 13px; line-height: 1.5; max-width: 292px; }
+    .hero-date { margin-top: 17px; color: var(--plum); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+    .feature { background: var(--plum); color: white; border-radius: var(--radius); padding: 20px; min-height: 177px; position: relative; overflow: hidden; margin: 22px 0 25px; }
+    .feature:after { content: ""; width: 160px; height: 160px; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; position: absolute; right: -38px; bottom: -60px; box-shadow: 0 0 0 17px rgba(255,255,255,.06), 0 0 0 34px rgba(255,255,255,.06); }
+    .feature .eyebrow { color: #eab6a7; }
+    .feature h2 { margin-top: 10px; max-width: 220px; font-size: 25px; line-height: 1.08; }
+    .feature p { font-size: 12px; color: #e8d8de; margin-top: 9px; }
+    .feature .pill { position: absolute; bottom: 19px; left: 20px; background: var(--coral); color: white; padding: 8px 12px; border-radius: 99px; font-size: 11px; font-weight: 800; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 13px; }
+    .text-btn { color: var(--coral); font-size: 11px; font-weight: 800; background: transparent; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px 21px; padding: 0 20px 2px; }
+    .chips::-webkit-scrollbar { display: none; }
+    #exploreChips { display:block; overflow:visible; }
+    .chip-line { display:flex; gap:8px; width:100%; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+    .chip-line::-webkit-scrollbar { display:none; }
+    .chip-line + .chip-line { margin-top:8px; }
+    .chip { white-space: nowrap; border: 1px solid var(--line); padding: 9px 13px; border-radius: 99px; color: var(--muted); background: transparent; font-size: 11px; font-weight: 800; }
+    .chip.active { background: var(--ink); border-color: var(--ink); color: white; }
+    .events { display: grid; gap: 11px; }
+    .event { background: var(--white); border: 1px solid #eee7df; border-radius: 17px; padding: 14px; display: grid; grid-template-columns: 51px 1fr 32px; gap: 13px; align-items: center; }
+    .event-date { align-self: stretch; border-radius: 11px; background: var(--mint); display: flex; flex-direction: column; justify-content: center; align-items: center; color: #28705b; }
+    .event-date b { font-size: 19px; line-height: 1; }
+    .event-date span { font-size: 9px; font-weight: 900; letter-spacing: .09em; margin-top: 4px; }
+    .event-info h3 { margin-bottom: 5px; }
+    .event-info p { font-size: 11px; color: var(--muted); }
+    .event-meta { margin-top: 7px; display: flex; gap: 7px; flex-wrap: wrap; }
+    .tag { background: #f3eee9; border-radius: 5px; padding: 4px 6px; font-size: 9px; color: var(--muted); font-weight: 800; }
+    .tag.plum { background: var(--lavender); color: var(--plum); }
+    .save { width: 31px; height: 31px; background: #f7f1ec; border-radius: 50%; color: var(--muted); font-size: 15px; }
+    .save.saved { color: var(--plum); background: #ead7e1; }
+    .empty { display: none; text-align: center; padding: 24px; background: var(--white); border-radius: 16px; color: var(--muted); font-size: 12px; }
+    .notice { display: flex; gap: 12px; align-items: center; padding: 13px; background: #fff6de; border-radius: 16px; margin-bottom: 22px; }
+    .notice-icon { width: 30px; height: 30px; border-radius: 10px; background: var(--gold); display: grid; place-items: center; }
+    .notice p { font-size: 11px; line-height: 1.35; }
+    .notice b { display: block; margin-bottom: 2px; }
+    .profile-card { background: var(--plum); color: white; border-radius: var(--radius); padding: 21px; display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
+    .profile-card .avatar { width: 50px; height: 50px; background: #f1b899; color: var(--plum); border: 0; font-size: 17px; }
+    .profile-card p { color: #e9d6dc; font-size: 11px; margin-top: 4px; }
+    .club-card { border-radius: var(--radius); background: var(--white); border: 1px solid #eee6df; padding: 18px; margin-bottom: 12px; }
+    .club-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .club-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .club-dot.cobalt { background: #6f8ad8; } .club-dot.ruby { background: #ce5661; } .club-dot.martian { background: #e57f46; } .club-dot.emerald { background: #53a986; } .club-dot.amber { background: #dda83e; } .club-dot.amethyst { background: #956cc1; }
+    .member-count { color: var(--muted); font-size: 10px; font-weight: 800; }
+    .club-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    .stat { background: #f7f3ee; border-radius: 11px; padding: 10px 6px; text-align: center; }
+    .stat b { display: block; font-size: 17px; } .stat span { color: var(--muted); font-size: 9px; }
+    .club-details { display:grid; gap:8px; margin-top:12px; }
+    .club-detail { display:flex; align-items:center; justify-content:space-between; padding:10px 11px; border-radius:11px; background:#f7f3ee; font-size:11px; }
+    .club-detail span { color:var(--muted); font-size:10px; }
+    .activity-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .activity-list .tag { background:#efe5ef; color:var(--plum); }
+    .club-section-label { margin-top:16px; color:var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; }
+    .people-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .person { background:#f7f3ee; border-radius:8px; padding:7px 8px; color:var(--ink); font-size:10px; }
+    .person.more { color:var(--muted); }
+    .club-activity { display:grid; grid-template-columns:88px 1fr; gap:9px; align-items:start; padding:9px 0; border-bottom:1px solid var(--line); }
+    .club-activity:last-child { border-bottom:0; }
+    .club-activity b { font-size:10px; color:var(--plum); }
+    .club-activity span { font-size:11px; line-height:1.35; }
+    .swap-card { background:var(--plum); color:white; border-radius:var(--radius); padding:18px; margin-top:12px; }
+    .swap-card p { color:#ead8df; font-size:11px; line-height:1.45; margin-top:6px; }
+    .swap-form { display:flex; gap:8px; margin-top:14px; }
+    .swap-form select { flex:1; border:0; padding:10px; }
+    .swap-form .primary { background:var(--coral); white-space:nowrap; }
+    .approval-track { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+    .approval-step { background:rgba(255,255,255,.11); border-radius:11px; padding:10px; }
+    .approval-step span { display:block; color:#e8cdd6; font-size:9px; }
+    .approval-step b { display:block; font-size:11px; margin-top:4px; }
+    .approval { background: #fffdf9; border: 1px solid #eee6df; border-radius: 17px; padding: 14px; margin: 10px 0; }
+    .approval-head { display: flex; justify-content: space-between; gap: 10px; }
+    .approval p { color: var(--muted); font-size: 11px; line-height: 1.4; margin-top: 5px; }
+    .status { background: #fff1ce; color: #95651c; border-radius: 99px; padding: 5px 8px; height: fit-content; font-size: 9px; font-weight: 900; }
+    .approval-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .small-btn { border-radius: 9px; padding: 8px 12px; font-size: 10px; font-weight: 900; background: var(--ink); color: white; }
+    .small-btn.alt { background: #f1ebe5; color: var(--ink); }
+    .announcement { background: #eadfe8; border-radius: 17px; padding: 15px; margin-bottom: 11px; }
+    .announcement:nth-child(2) { background: #dfeee8; }
+    .announcement .a-top { display: flex; justify-content: space-between; font-size: 10px; font-weight: 900; color: var(--plum); margin-bottom: 8px; }
+    .announcement p { font-size: 12px; line-height: 1.45; }
+    .compose { background: var(--white); border: 1px solid var(--line); border-radius: 17px; padding: 14px; margin-top: 16px; }
+    textarea { width: 100%; resize: none; border: 0; background: #f7f2ed; border-radius: 11px; padding: 12px; font: inherit; font-size: 12px; min-height: 70px; outline: none; }
+    .compose-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    select { border: 1px solid var(--line); border-radius: 8px; background: var(--white); padding: 7px; font-size: 10px; color: var(--muted); }
+    .primary { color: white; background: var(--plum); border-radius: 10px; padding: 9px 13px; font-size: 10px; font-weight: 900; }
+    .role-panel { background:#fff6de; border-radius:17px; padding:15px; margin-bottom:20px; }
+    .role-panel h3 { color:var(--plum); }
+    .role-panel p { color:var(--muted); font-size:11px; line-height:1.4; margin-top:5px; }
+    .role-actions { display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; }
+    .role-actions .tag { background:rgba(255,255,255,.7); color:var(--plum); }
+    .staff-compose { display:none; }
+    .staff-compose.visible { display:block; }
+    .bottom-nav { position: fixed; bottom: 0; width: min(100%, 430px); height: 74px; background: rgba(255,253,249,.95); backdrop-filter: blur(12px); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 9px max(8px, env(safe-area-inset-bottom)); z-index: 5; }
+    .nav-btn { background: transparent; color: #aaa19b; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 9px; font-weight: 800; }
+    .nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: var(--plum); }
+    .modal-backdrop { display:none; position: fixed; inset: 0; background: rgba(27,18,17,.45); z-index: 10; align-items: end; justify-content: center; }
+    .modal-backdrop.open { display:flex; }
+    .modal { width: min(100%,430px); background: var(--paper); border-radius: 28px 28px 0 0; padding: 22px 20px 30px; animation: slide .25s ease; }
+    @keyframes slide { from { transform: translateY(100%); } to { transform: none; } }
+    .modal-bar { width: 44px; height: 4px; background: #d2c8c0; border-radius: 99px; margin: -7px auto 20px; }
+    .modal h2 { margin-bottom: 8px; } .modal p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 17px 0; }
+    .detail { background: var(--white); border-radius: 12px; padding: 11px; } .detail span { color: var(--muted); font-size: 9px; display:block; } .detail b { font-size: 12px; display:block; margin-top: 4px; }
+    .toast { position: fixed; left: 50%; bottom: 89px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: white; border-radius: 99px; padding: 11px 15px; font-size: 11px; font-weight: 800; z-index: 20; pointer-events: none; transition: .25s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .login-screen { min-height:100vh; display:grid; place-items:center; padding:28px 20px; background:var(--paper); }
+    .login-card { width:min(100%,390px); background:var(--white); border:1px solid #eee6df; border-radius:28px; padding:26px 22px; box-shadow:var(--shadow); }
+    .login-card .mark { margin-bottom:24px; width:44px; height:44px; font-size:19px; }
+    .login-card h1 { font-size:34px; margin-top:9px; }
+    .login-card > p { color:var(--muted); font-size:12px; line-height:1.5; margin-top:12px; }
+    .login-label { display:block; color:var(--ink); font-size:11px; font-weight:900; margin:24px 0 8px; }
+    .login-input { width:100%; background:#f7f2ed; border:1px solid transparent; border-radius:12px; padding:14px; outline:none; font:inherit; font-size:13px; }
+    .login-input:focus { border-color:var(--coral); }
+    .login-btn { width:100%; background:var(--plum); color:#fff; border-radius:12px; padding:14px; margin-top:12px; font-weight:900; font-size:12px; }
+    .login-hint { margin-top:16px; padding:11px 12px; border-radius:12px; background:#f7f2ed; color:var(--muted); font-size:10px; line-height:1.45; }
+    .login-error { min-height:16px; margin-top:9px; color:#b84e4e; font-size:10px; font-weight:800; }
+    .app-hidden { display:none; }
+    .avatar-menu { display:none; position:fixed; top:68px; right:max(18px, calc((100vw - 430px)/2 + 18px)); z-index:8; width:155px; padding:7px; background:var(--white); border:1px solid var(--line); border-radius:15px; box-shadow:var(--shadow); }
+    .avatar-menu.open { display:grid; gap:3px; }
+    .avatar-menu button { background:transparent; border-radius:9px; text-align:left; padding:10px 11px; color:var(--ink); font-size:11px; font-weight:800; }
+    .avatar-menu button:hover { background:#f5eee8; }
+    .avatar-menu button.logout { color:#b84e4e; }
+  </style>
+</head>
+<body>
+<section class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="mark">A</div>
+    <div class="eyebrow">Acharya School of Design</div>
+    <h1>Welcome to<br><span style="color:var(--coral)">Design Week.</span></h1>
+    <p>Sign in with your Acharya username to open the right app experience for your role.</p>
+    <label class="login-label" for="username">Username</label>
+    <input class="login-input" id="username" type="text" autocomplete="username" placeholder="name.bvam@acharya.ac.in" />
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn">Continue to app →</button>
+    <div class="login-hint"><b>Student:</b> name.bvam@acharya.ac.in, name.bvgd@acharya.ac.in, name.bvisd@acharya.ac.in or name.bvpd@acharya.ac.in<br><br><b>Faculty:</b> name@acharya.ac.in</div>
+  </div>
+</section>
+<main class="shell app-hidden" id="appShell">
+  <section class="page active" id="home">
+    <div class="topline"><div class="brand"><div class="mark">A</div><div class="brand-name">ACHARYA<br><span>SCHOOL OF DESIGN</span></div></div><button class="avatar dashboard-avatar" id="dashboardAvatar" data-avatar-trigger>AS</button></div>
+    <div class="hero"><div class="eyebrow">02 — 06 November 2026</div><h1>Make room<br>for <span>ideas.</span></h1><p>Five days of workshops, competitions, conversations and a little bit of beautiful chaos.</p><div class="hero-date">ACHARYA DESIGN WEEK · 2026</div></div>
+    <div class="feature"><div class="eyebrow">Happening on the final evening</div><h2>Fashion Show<br>Competition</h2><p>Runway · 6 clubs · one winning collection</p><div class="pill">06 NOV · 06:30 PM</div></div>
+    <div class="section-head"><h2>Coming up</h2><button class="text-btn" data-go="explore">View all →</button></div>
+    <div class="chips" id="homeChips"><button class="chip active" data-filter="all">All</button><button class="chip" data-filter="Workshop">Workshops</button><button class="chip" data-filter="Competition">Competitions</button><button class="chip" data-filter="Talk">Expert talks</button></div>
+    <div class="events" id="homeEvents"></div><div class="empty" id="homeEmpty">No events in this category yet.</div>
+  </section>
+
+  <section class="page" id="explore">
+    <div class="topline"><div><div class="eyebrow">The week at a glance</div><h2 style="margin-top:5px">Explore events</h2></div><button class="avatar" id="filterIcon">≡</button></div>
+    <div class="notice"><div class="notice-icon">✦</div><p><b>Registration is open</b>Save a spot in any workshop or competition before capacity fills up.</p></div>
+    <div class="chips" id="exploreChips"><div class="chip-line" id="exploreAllRow"><button class="chip active" data-filter="all">All events</button></div><div class="chip-line" id="exploreDatesRow"><button class="chip" data-filter="02">02 Nov</button><button class="chip" data-filter="03">03 Nov</button><button class="chip" data-filter="04">04 Nov</button><button class="chip" data-filter="05">05 Nov</button><button class="chip" data-filter="06">06 Nov</button></div></div>
+    <div class="events" id="exploreEvents"></div><div class="empty" id="exploreEmpty">No events match that day.</div>
+  </section>
+
+  <section class="page" id="clubs">
+    <div class="topline"><div><div class="eyebrow">Your community</div><h2 style="margin-top:5px">Club spaces</h2></div><div class="avatar">AS</div></div>
+    <div class="profile-card"><div class="avatar">AS</div><div><h3 id="clubUserName">Aarav Sharma</h3><p id="clubUserRole">Student · Amethyst Club</p></div></div>
+    <div class="section-head"><h2>My club</h2><span class="member-count">Amethyst space</span></div>
+    <div id="clubList"></div>
+    <div class="swap-card" id="studentSwap"><div class="eyebrow" style="color:#eab6a7">Club membership</div><h2 style="margin-top:7px">Thinking of a new colour?</h2><p>Request a club swap. Your current captain and the captain of your chosen club must both approve it.</p><div class="swap-form"><select id="swapTarget"><option>Choose a club</option><option>Cobalt</option><option>Ruby</option><option>Martian</option><option>Emerald</option><option>Amber</option></select><button class="primary" id="requestSwap">Request swap</button></div><div class="approval-track"><div class="approval-step"><span>1 · CURRENT CLUB</span><b>Amethyst Captain <em style="font-style:normal;color:#f5d481">Pending</em></b></div><div class="approval-step"><span>2 · NEW CLUB</span><b>Club Captain <em style="font-style:normal;color:#f5d481">Pending</em></b></div></div></div>
+  </section>
+
+  <section class="page" id="alerts">
+    <div class="topline"><div><div class="eyebrow">Stay in the loop</div><h2 style="margin-top:5px">Announcements</h2></div><div class="avatar">✦</div></div>
+    <div id="announcementList"></div>
+    <div class="notice" id="studentNotice" style="margin-top:18px"><div class="notice-icon">i</div><p><b>Student view</b>Announcements are published by the Design Week Committee and faculty members. Message sending is available only to authorised staff.</p></div>
+    <div class="compose staff-compose" id="staffComposer"><div class="section-head"><h2>Send an update</h2><span class="member-count">Staff access</span></div><textarea id="message" placeholder="Write an update for your club..."></textarea><div class="compose-foot"><select id="audience"><option>All clubs</option><option>Amethyst Club</option><option>Emerald Club</option><option>Ruby Club</option><option>Cobalt Club</option><option>Martian Club</option><option>Amber Club</option></select><button class="primary" id="sendMessage">Send update</button></div></div>
+  </section>
+
+  <section class="page" id="profile">
+    <div class="topline"><div><div class="eyebrow">Your design week</div><h2 style="margin-top:5px">Profile</h2></div><button class="avatar" data-avatar-trigger aria-label="Open account menu">AS</button></div>
+    <div class="profile-card"><button class="avatar" id="profileAvatar" data-avatar-trigger aria-label="Open account menu">AS</button><div><h3 id="profileName">Aarav Sharma</h3><p id="profileRole">Student · Amethyst Club · ID ASD-2418</p></div></div>
+    <div class="role-panel" id="rolePanel"><h3>Student dashboard</h3><p>Browse the full Design Week programme, register for events, follow Amethyst activities, and request a club swap.</p><div class="role-actions"><span class="tag">Register events</span><span class="tag">View club</span><span class="tag">Request swap</span></div></div>
+    <div class="section-head"><h2>My schedule</h2><span class="member-count">3 saved events</span></div>
+    <div class="events" id="savedEvents"></div><div class="empty" id="savedEmpty">Tap the bookmark on an event to build your schedule.</div>
+    <div class="section-head" style="margin-top:28px"><h2>My club</h2></div>
+    <div class="club-card"><div class="club-line"><h3><span class="club-dot amethyst"></span>Amethyst</h3><span class="member-count">Your home club</span></div><div class="club-stats"><div class="stat"><b>95</b><span>members</span></div><div class="stat"><b>4</b><span>faculty</span></div><div class="stat"><b>12</b><span>events</span></div></div></div>
+  </section>
+
+  <nav class="bottom-nav"><button class="nav-btn active" data-page="home"><span class="nav-icon">⌂</span>Home</button><button class="nav-btn" data-page="explore"><span class="nav-icon">⌕</span>Explore</button><button class="nav-btn" data-page="clubs"><span class="nav-icon">♧</span>Clubs</button><button class="nav-btn" data-page="alerts"><span class="nav-icon">◌</span>Alerts</button><button class="nav-btn" data-page="profile"><span class="nav-icon">◉</span>Profile</button></nav>
+</main>
+<div class="avatar-menu" id="avatarMenu"><button data-menu-page="profile">Profile</button><button data-menu-page="clubs">Club</button><button class="logout" id="logoutBtn">Log out</button></div>
+
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-bar"></div><h2 id="modalTitle">Event details</h2><p id="modalDesc"></p><div class="detail-grid"><div class="detail"><span>DATE</span><b id="modalDate"></b></div><div class="detail"><span>HOSTED BY</span><b id="modalHost"></b></div><div class="detail"><span>VENUE</span><b id="modalVenue"></b></div><div class="detail"><span>SPOTS LEFT</span><b id="modalSpots"></b></div></div><button class="primary" id="modalAction" style="width:100%; padding:13px">Register for this event</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const events = [
+    {id:1, day:'02', month:'NOV', title:'Material Futures', type:'Workshop', host:'Cobalt Club', venue:'Studio 2', time:'10:00 AM', desc:'A hands-on exploration of sustainable materials and the stories they can tell.', spots:'18 spots'},
+    {id:2, day:'02', month:'NOV', title:'The Design of Attention', type:'Talk', host:'Committee', venue:'Black Box Theatre', time:'03:00 PM', desc:'An expert conversation on designing for focus, emotion and the moments between.', spots:'Open seating'},
+    {id:3, day:'03', month:'NOV', title:'Reframe the Ordinary', type:'Competition', host:'Emerald Club', venue:'Main Atrium', time:'11:00 AM', desc:'Turn a familiar object into something unexpected. Teams of two, one afternoon.', spots:'24 teams'},
+    {id:4, day:'04', month:'NOV', title:'Light, Shadow, Story', type:'Workshop', host:'Ruby Club', venue:'Studio 5', time:'09:30 AM', desc:'Create a visual narrative using only light, shadow and a single moving object.', spots:'12 spots'},
+    {id:5, day:'04', month:'NOV', title:'Designing for Belonging', type:'Talk', host:'Martian Club', venue:'Auditorium', time:'02:00 PM', desc:'A candid session with product designer Nandita Rao on inclusive design.', spots:'Open seating'},
+    {id:6, day:'05', month:'NOV', title:'Threads of Tomorrow', type:'Workshop', host:'Amber Club', venue:'Textile Lab', time:'10:00 AM', desc:'Experiment with form, movement and upcycled textiles ahead of the final runway.', spots:'16 spots'},
+    {id:7, day:'05', month:'NOV', title:'Six Clubs, One Brief', type:'Competition', host:'Committee', venue:'Main Atrium', time:'04:00 PM', desc:'A rapid-fire collaborative brief that brings all six clubs into one room.', spots:'6 club teams'},
+    {id:8, day:'06', month:'NOV', title:'Fashion Show Competition', type:'Competition', host:'All Clubs', venue:'Open Air Court', time:'06:30 PM', desc:'Six interpretations of the future of fashion. One runway. One winning collection.', spots:'Public showcase'}
+  ];
+  const SUPABASE_URL='https://wpysolqyfmxrgtyloesu.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dnfthenoS65ZnGyNL44GRA_fG2XZ2lq';
+  const SUPABASE_HEADERS={'apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,'Content-Type':'application/json'};
+  let saved = new Set([1, 6]);
+  let role = 'student';
+  let onlineMessages = [];
+  let activeFilter = 'all';
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  function eventCard(e) { return `<article class="event" data-id="${e.id}"><div class="event-date"><b>${e.day}</b><span>${e.month}</span></div><div class="event-info"><h3>${e.title}</h3><p>${e.time} · ${e.venue}</p><div class="event-meta"><span class="tag plum">${e.type}</span><span class="tag">${e.host}</span></div></div><button class="save ${saved.has(e.id)?'saved':''}" aria-label="Save event" data-save="${e.id}">${saved.has(e.id)?'★':'☆'}</button></article>`; }
+  function render(list, root, empty) { const el=$(root); const filtered=list.filter(e => activeFilter === 'all' || (activeFilter.length===2 ? e.day === activeFilter : e.type === activeFilter)); el.innerHTML=filtered.map(eventCard).join(''); $(empty).style.display = filtered.length ? 'none':'block'; }
+  const baseAnnouncements=[
+    {source:'DESIGN WEEK COMMITTEE',time:'2h ago',text:'Fashion Show registrations close tonight at 8 PM. Make sure your club has submitted its final concept board.',audience:'All clubs'},
+    {source:'AMETHYST CLUB',time:'Yesterday',text:'Meet at Studio 4 tomorrow at 9:30 AM for the opening workshop. Bring one found object from home.',audience:'Amethyst Club'},
+    {source:'EMERALD CLUB',time:'Yesterday',text:'Our expert talk with Nandita Rao has moved to the Black Box Theatre due to capacity.',audience:'Emerald Club'}
+  ];
+  const escapeHtml=value=>String(value).replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]));
+  async function loadMessages(){
+    try{
+      const response=await fetch(`${SUPABASE_URL}/rest/v1/announcements?select=id,author,audience,message,created_at&order=created_at.desc`,{headers:SUPABASE_HEADERS});
+      if(!response.ok) throw new Error('Unable to load announcements');
+      onlineMessages=await response.json(); renderAnnouncements();
+    }catch(error){ onlineMessages=[]; renderAnnouncements(); }
+  }
+  function renderAnnouncements(){
+    const messages=onlineMessages.map(m=>({source:`FACULTY · ${m.author}`,time:new Date(m.created_at).toLocaleString([], {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),text:m.message,audience:m.audience}));
+    const visible=[...messages,...baseAnnouncements].filter(a=>role!=='student'||a.audience==='All clubs'||a.audience==='Amethyst Club');
+    $('#announcementList').innerHTML=visible.map(a=>`<div class="announcement"><div class="a-top"><span>${escapeHtml(a.source)}</span><span>${escapeHtml(a.time)}</span></div><p>${escapeHtml(a.text)}</p></div>`).join('');
+  }
+  function renderAll() { render(events.slice(0,5), '#homeEvents', '#homeEmpty'); render(events, '#exploreEvents', '#exploreEmpty'); render(events.filter(e=>saved.has(e.id)), '#savedEvents', '#savedEmpty'); renderAnnouncements(); }
+  function setFilter(value, group) { activeFilter=value; $$(group+' .chip').forEach(b=>b.classList.toggle('active', b.dataset.filter===value)); if(group==='#homeChips') render(events.slice(0,5),'#homeEvents','#homeEmpty'); else render(events,'#exploreEvents','#exploreEmpty'); }
+  function go(page) { $$('.page').forEach(p=>p.classList.toggle('active', p.id===page)); $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); window.scrollTo({top:0,behavior:'smooth'}); }
+  function toast(msg) { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+  function openEvent(id) { const e=events.find(x=>x.id===id); $('#modalTitle').textContent=e.title; $('#modalDesc').textContent=e.desc; $('#modalDate').textContent=`${e.day} ${e.month} · ${e.time}`; $('#modalHost').textContent=e.host; $('#modalVenue').textContent=e.venue; $('#modalSpots').textContent=e.spots; $('#modalAction').textContent=saved.has(e.id)?'You’re registered ✓':'Register for this event'; $('#modalAction').dataset.event=id; $('#modalBackdrop').classList.add('open'); }
+  function setRole(nextRole) {
+    role=nextRole;
+    const info={
+      student:{label:'Student · Amethyst Club · ID ASD-2418',title:'Student dashboard',copy:'Browse the full Design Week programme, register for events, follow Amethyst activities, and request a club swap.',actions:['Register events','View club','Request swap']},
+      faculty:{label:'Faculty · Amethyst Club',title:'Faculty dashboard',copy:'Supervise your club’s programme, track participation, and publish updates to your club or all clubs.',actions:['Attendance','Club activities','Send update']},
+      captain:{label:'Club Captain · Amethyst Club',title:'Captain dashboard',copy:'Manage Amethyst members, review club-swap requests, and approve cross-club participation.',actions:['2 swap requests','Member list','Approve access']},
+      committee:{label:'Design Week Committee',title:'Committee dashboard',copy:'Coordinate all six clubs, manage the Design Week programme, and send official announcements to every club.',actions:['6 clubs','8 events','Publish notice']}
+    }[nextRole];
+    $('#profileRole').textContent=info.label; $('#rolePanel').innerHTML=`<h3>${info.title}</h3><p>${info.copy}</p><div class="role-actions">${info.actions.map(a=>`<span class="tag">${a}</span>`).join('')}</div>`;
+    $('#staffComposer').classList.toggle('visible',nextRole!=='student'); $('#studentNotice').style.display=nextRole==='student'?'flex':'none';
+    $('#studentSwap').style.display=nextRole==='student'?'block':'none'; $('#clubUserRole').textContent=nextRole==='student'?'Student · Amethyst Club':'Faculty · Amethyst Club';
+    renderAnnouncements();
+    toast(`${info.title} enabled`);
+  }
+  function setAvatarInitials(value) {
+    $$('.avatar').forEach(a=>a.textContent=value);
+  }
+  function logout() {
+    localStorage.removeItem('acharyaDesignWeekUser'); $('#avatarMenu').classList.remove('open'); $('#appShell').classList.add('app-hidden'); $('#loginScreen').style.display='grid'; $('#username').value=''; $('#loginError').textContent=''; $('#profileName').textContent='Aarav Sharma'; $('#clubUserName').textContent='Aarav Sharma'; setAvatarInitials('AS'); toast('You have been logged out');
+  }
+  function openSession(username,nextRole) {
+    localStorage.setItem('acharyaDesignWeekUser',username);
+    const local=username.split('@')[0]; const parts=local.split(/[._-]/).filter(Boolean); const suffixes=['bvam','bvgd','bvisd','bvpd']; const nameParts=suffixes.includes(parts[parts.length-1])?parts.slice(0,-1):parts; const displayName=nameParts.map(x=>x.replace(/^./,c=>c.toUpperCase())).join(' ')||'Acharya User'; const initials=(nameParts.length>1?nameParts[0][0]+nameParts[nameParts.length-1][0]:nameParts[0]?.[0]||'A').toUpperCase();
+    $('#profileName').textContent=displayName; $('#clubUserName').textContent=displayName; setAvatarInitials(initials); $('#loginScreen').style.display='none'; $('#appShell').classList.remove('app-hidden'); setRole(nextRole); go('home');
+  }
+  function signIn() {
+    const username=$('#username').value.trim().toLowerCase();
+    const student=/^[a-z0-9._-]+\.(bvam|bvgd|bvisd|bvpd)@acharya\.ac\.in$/i;
+    const faculty=/^[a-z0-9._-]+@acharya\.ac\.in$/i;
+    const nextRole=student.test(username)?'student':faculty.test(username)?'faculty':null;
+    if(!nextRole){ $('#loginError').textContent='Use a valid Student or Faculty Acharya username.'; return; }
+    openSession(username,nextRole);
+  }
+  $('#loginBtn').addEventListener('click',signIn);
+  $('#username').addEventListener('keydown',e=>{ if(e.key==='Enter') signIn(); });
+  $('#logoutBtn').addEventListener('click',logout);
+  document.addEventListener('click', e => {
+    const avatarTrigger=e.target.closest('[data-avatar-trigger]'); if(avatarTrigger){ e.stopPropagation(); $('#avatarMenu').classList.toggle('open'); return; }
+    const menuPage=e.target.closest('[data-menu-page]'); if(menuPage){ $('#avatarMenu').classList.remove('open'); return go(menuPage.dataset.menuPage); }
+    if(!e.target.closest('#avatarMenu')) $('#avatarMenu').classList.remove('open');
+    const nav=e.target.closest('[data-page]'); if(nav) return go(nav.dataset.page);
+    const goBtn=e.target.closest('[data-go]'); if(goBtn) return go(goBtn.dataset.go);
+    const chip=e.target.closest('.chip'); if(chip) return setFilter(chip.dataset.filter, '#'+chip.closest('.chips').id);
+    const save=e.target.closest('[data-save]'); if(save){ const id=Number(save.dataset.save); saved.has(id)?saved.delete(id):saved.add(id); renderAll(); toast(saved.has(id)?'Added to your schedule':'Removed from your schedule'); return; }
+    const card=e.target.closest('.event'); if(card && !e.target.closest('button')) return openEvent(Number(card.dataset.id));
+    if(e.target.id==='modalBackdrop') $('#modalBackdrop').classList.remove('open');
+    if(e.target.closest('[data-approve]')||e.target.closest('[data-decline]')){ const box=e.target.closest('.approval'); const approve=e.target.closest('[data-approve]'); box.innerHTML=`<div class="approval-head"><div><h3>${approve?'Request approved':'Request declined'}</h3><p>${approve?'The student has been notified and added to the event.':'The request was removed from your approval queue.'}</p></div><span class="status" style="background:${approve?'#d9f0e7':'#f1ebe5'};color:${approve?'#28705b':'#817a73'}">${approve?'Done':'Closed'}</span></div>`; toast(approve?'Approval sent':'Request declined'); }
+  });
+  $('#modalAction').addEventListener('click',()=>{ const id=Number($('#modalAction').dataset.event); if(!saved.has(id)){saved.add(id);renderAll();$('#modalAction').textContent='You’re registered ✓';toast('You’re registered — see you there!');} else { toast('You’re already registered'); } });
+  $('#requestSwap').addEventListener('click',()=>{ const target=$('#swapTarget').value; if(target==='Choose a club') return toast('Choose a club to request a swap'); toast(`Swap request sent to the ${target} and Amethyst captains`); $('#requestSwap').textContent='Request sent ✓'; $('#requestSwap').disabled=true; });
+  $('#sendMessage').addEventListener('click',async()=>{ const text=$('#message').value.trim(); if(role==='student') return toast('Only Faculty and authorised staff can send updates'); if(!text) return toast('Write a message first'); const audience=$('#audience').value; const button=$('#sendMessage'); button.disabled=true; try{ const response=await fetch(`${SUPABASE_URL}/rest/v1/announcements`,{method:'POST',headers:{...SUPABASE_HEADERS,'Prefer':'return=representation'},body:JSON.stringify({author:$('#profileName').textContent,audience,message:text})}); if(!response.ok) throw new Error('Unable to send announcement'); $('#message').value=''; await loadMessages(); toast(`Update sent to ${audience}`); }catch(error){ toast('Could not send update. Check Supabase setup.'); } finally { button.disabled=false; } });
+  const storedUsername=localStorage.getItem('acharyaDesignWeekUser');
+  if(storedUsername){ const storedStudent=/^[a-z0-9._-]+\.(bvam|bvgd|bvisd|bvpd)@acharya\.ac\.in$/i.test(storedUsername); openSession(storedUsername,storedStudent?'student':'faculty'); }
+  loadMessages();
+  const clubs=[
+    {name:'Cobalt', color:'cobalt', members:'95', captain:'Ishaan Mehta', faculty:'Dr. Kavya Rao', activities:['Material Futures','Open Studio','Design Sprint']},
+    {name:'Ruby', color:'ruby', members:'95', captain:'Ananya Nair', faculty:'Prof. Ritu Das', activities:['Light, Shadow, Story','Typography Lab','Talk Series']},
+    {name:'Martian', color:'martian', members:'95', captain:'Dev Malhotra', faculty:'Prof. Arjun Sen', activities:['Designing for Belonging','Field Notes','Rapid Prototyping']},
+    {name:'Emerald', color:'emerald', members:'95', captain:'Meera Iyer', faculty:'Dr. Nikhil Joshi', activities:['Reframe the Ordinary','Material Lab','Exhibition Walk']},
+    {name:'Amber', color:'amber', members:'95', captain:'Kabir Rao', faculty:'Prof. Sneha Menon', activities:['Threads of Tomorrow','Fashion Lab','Costume Stories']},
+    {name:'Amethyst', color:'amethyst', members:'95', captain:'Tara Kapoor', faculty:['Dr. Anjali Bhat','Prof. Rohan Sethi','Dr. Leena Joseph','Prof. Vikram Rao'], membersList:['Aarav Sharma','Nisha Verma','Kabir Menon','Rhea Kapoor','Sanjay Iyer','Maya Thomas'], workshops:['Material Futures · 02 Nov, 10:00 AM','Threads of Tomorrow · 05 Nov, 10:00 AM'], competitions:['Six Clubs, One Brief · 05 Nov, 04:00 PM','Fashion Show · 06 Nov, 06:30 PM'], talks:['Designing for Belonging · 04 Nov, 02:00 PM']}
+  ];
+  const myClub=clubs.find(c=>c.name==='Amethyst');
+  $('#clubList').innerHTML=`<div class="club-card"><div class="club-line"><h3><span class="club-dot ${myClub.color}"></span>${myClub.name}</h3><span class="member-count">Your club</span></div><div class="club-stats"><div class="stat"><b>${myClub.members}</b><span>members</span></div><div class="stat"><b>1</b><span>captain</span></div><div class="stat"><b>4</b><span>faculty</span></div></div><div class="club-section-label">Club captain</div><div class="people-list"><span class="person">${myClub.captain}</span></div><div class="club-section-label">Faculty members</div><div class="people-list">${myClub.faculty.map(f=>`<span class="person">${f}</span>`).join('')}</div><div class="club-section-label">Club members</div><div class="people-list">${myClub.membersList.map(m=>`<span class="person">${m}</span>`).join('')}<span class="person more">+ 89 more members</span></div><div class="club-section-label">Activities by Amethyst</div><div class="club-activity"><b>WORKSHOPS</b><span>${myClub.workshops.join('<br>')}</span></div><div class="club-activity"><b>COMPETITIONS</b><span>${myClub.competitions.join('<br>')}</span></div><div class="club-activity"><b>EXPERT TALKS</b><span>${myClub.talks.join('<br>')}</span></div></div>`;
+  renderAll();
+</script>
+</body>
+</html>
