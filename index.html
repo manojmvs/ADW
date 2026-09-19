@@ -156,6 +156,14 @@
     .login-btn { width:100%; background:var(--plum); color:#fff; border-radius:12px; padding:14px; margin-top:12px; font-weight:900; font-size:12px; }
     .login-hint { margin-top:16px; padding:11px 12px; border-radius:12px; background:#f7f2ed; color:var(--muted); font-size:10px; line-height:1.45; }
     .login-error { min-height:16px; margin-top:9px; color:#b84e4e; font-size:10px; font-weight:800; }
+    .login-switch { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:22px; }
+    .login-switch button { border:1px solid var(--line); background:var(--white); color:var(--muted); border-radius:9px; padding:9px; font-size:10px; font-weight:900; }
+    .login-switch button.active { background:var(--ink); border-color:var(--ink); color:#fff; }
+    .signup-form { display:none; }
+    .signup-form.visible { display:block; }
+    .signup-form .login-label { margin-top:15px; }
+    .signup-select { width:100%; border:1px solid transparent; background:#f7f2ed; border-radius:12px; padding:14px; font:inherit; font-size:13px; outline:none; }
+    .signup-note { margin-top:13px; color:var(--muted); font-size:10px; line-height:1.45; }
     .app-hidden { display:none; }
     .avatar-menu { display:none; position:fixed; top:68px; right:max(18px, calc((100vw - 430px)/2 + 18px)); z-index:8; width:155px; padding:7px; background:var(--white); border:1px solid var(--line); border-radius:15px; box-shadow:var(--shadow); }
     .avatar-menu.open { display:grid; gap:3px; }
@@ -171,11 +179,25 @@
     <div class="eyebrow">Acharya School of Design</div>
     <h1>Welcome to<br><span style="color:var(--coral)">Design Week.</span></h1>
     <p>Sign in with your Acharya username to open the right app experience for your role.</p>
+    <div class="login-switch"><button class="active" id="loginModeBtn">Login</button><button id="signupModeBtn">Sign up</button></div>
+    <div id="loginForm">
     <label class="login-label" for="username">Username</label>
     <input class="login-input" id="username" type="text" autocomplete="username" placeholder="name.bvam@acharya.ac.in" />
     <div class="login-error" id="loginError"></div>
     <button class="login-btn" id="loginBtn">Continue to app →</button>
     <div class="login-hint"><b>Student:</b> name.bvam@acharya.ac.in, name.bvgd@acharya.ac.in, name.bvisd@acharya.ac.in or name.bvpd@acharya.ac.in<br><br><b>Faculty:</b> name@acharya.ac.in</div>
+    </div>
+    <div class="signup-form" id="signupForm">
+      <label class="login-label" for="signupName">Full name</label>
+      <input class="login-input" id="signupName" type="text" placeholder="Your full name" />
+      <label class="login-label" for="signupEmail">Acharya email</label>
+      <input class="login-input" id="signupEmail" type="email" placeholder="name.bvam@acharya.ac.in" />
+      <label class="login-label" for="signupClub">Club</label>
+      <select class="signup-select" id="signupClub"><option value="">Choose your club</option><option>Cobalt</option><option>Ruby</option><option>Martian</option><option>Emerald</option><option>Amber</option><option>Amethyst</option></select>
+      <p class="signup-note">New accounts are submitted as <b>Student</b> requests. The Design Week Committee will verify and approve your access.</p>
+      <div class="login-error" id="signupError"></div>
+      <button class="login-btn" id="signupBtn">Submit signup request →</button>
+    </div>
   </div>
 </section>
 <main class="shell app-hidden" id="appShell">
@@ -339,6 +361,15 @@
   }
   $('#loginBtn').addEventListener('click',signIn);
   $('#username').addEventListener('keydown',e=>{ if(e.key==='Enter') signIn(); });
+  function setLoginMode(mode){ const signup=mode==='signup'; $('#loginForm').classList.toggle('app-hidden',signup); $('#signupForm').classList.toggle('visible',signup); $('#loginModeBtn').classList.toggle('active',!signup); $('#signupModeBtn').classList.toggle('active',signup); }
+  $('#loginModeBtn').addEventListener('click',()=>setLoginMode('login'));
+  $('#signupModeBtn').addEventListener('click',()=>setLoginMode('signup'));
+  $('#signupBtn').addEventListener('click',async()=>{
+    const name=$('#signupName').value.trim(); const email=$('#signupEmail').value.trim().toLowerCase(); const club=$('#signupClub').value; const studentEmail=/^[a-z0-9._-]+\.(bvam|bvgd|bvis|bvisd|bvpd)@acharya\.ac\.in$/i;
+    if(!name||!studentEmail.test(email)||!club){ $('#signupError').textContent='Enter your name, valid student email, and club.'; return; }
+    const colors={Cobalt:'Blue',Ruby:'Red',Martian:'Yellow',Emerald:'Green',Amber:'Orange',Amethyst:'Purple'}; const button=$('#signupBtn'); button.disabled=true; $('#signupError').textContent='';
+    try{ const response=await fetch(`${SUPABASE_URL}/rest/v1/signup_requests`,{method:'POST',headers:{...SUPABASE_HEADERS,'Prefer':'return=minimal'},body:JSON.stringify({name,email,role:'Student',club,color:colors[club],status:'Pending'})}); if(!response.ok){ if(response.status===409) throw new Error('A signup request already exists for this email.'); throw new Error('Signup request could not be submitted.'); } $('#signupError').style.color='#28705b'; $('#signupError').textContent='Signup request submitted. Committee approval is pending.'; $('#signupName').value=''; $('#signupEmail').value=''; $('#signupClub').value=''; }catch(error){ $('#signupError').style.color='#b84e4e'; $('#signupError').textContent=error.message; } finally { button.disabled=false; }
+  });
   $('#logoutBtn').addEventListener('click',logout);
   document.addEventListener('click', e => {
     const avatarTrigger=e.target.closest('[data-avatar-trigger]'); if(avatarTrigger){ e.stopPropagation(); $('#avatarMenu').classList.toggle('open'); return; }
