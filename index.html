@@ -241,8 +241,28 @@
   const SUPABASE_URL='https://wpysolqyfmxrgtyloesu.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dnfthenoS65ZnGyNL44GRA_fG2XZ2lq';
   const SUPABASE_HEADERS={'apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,'Content-Type':'application/json'};
+  const importedUsers=[
+    {name:'Manoj',email:'manoj2883@acharya.ac.in',role:'Faculty',club:'Cobalt',color:'Blue'},
+    {name:'Akshay',email:'akshay2876@acharya.ac.in',role:'Faculty',club:'Martian',color:'Yellow'},
+    {name:'R Surya',email:'surya_1103@acharya.ac.in',role:'Faculty',club:'Ruby',color:'Red'},
+    {name:'Shalaka',email:'shalaka2327@acharya.ac.in',role:'Captain',club:'Emerald',color:'Green'},
+    {name:'Vijayalaxmi',email:'vijayalaxmi1990@acharya.ac.in',role:'Captain',club:'Amber',color:'Orange'},
+    {name:'Joseph',email:'joseph19@acharya.ac.in',role:'Faculty',club:'Amethyst',color:'Purple'},
+    {name:'Kalidas',email:'kalidas@acharya.ac.in',role:'Captain',club:'Cobalt',color:'Blue'},
+    {name:'Arunima',email:'arunima2581@acharya.ac.in',role:'Captain',club:'Ruby',color:'Red'},
+    {name:'L D Sherpa',email:'lakpadorjee2334@acharya.ac.in',role:'Captain',club:'Martian',color:'Yellow'},
+    {name:'Saksham',email:'sakshamr.23.bvam@acharya.ac.in',role:'Student',club:'Amethyst',color:'Purple'},
+    {name:'Shrinidhi',email:'shrinidhie.23.bvgd@acharya.ac.in',role:'Student',club:'Amethyst',color:'Purple'},
+    {name:'Iswarya',email:'iswaryak.23.bvis@acharya.ac.in',role:'Student',club:'Cobalt',color:'Blue'},
+    {name:'Anuvindh M',email:'anuvindhm.23.bvgd@acharya.ac.in',role:'Student',club:'Ruby',color:'Red'},
+    {name:'Abhishiek',email:'abhishekm.24.bvam@acharya.ac.in',role:'Student',club:'Martian',color:'Yellow'},
+    {name:'Yogesh',email:'yogeshk.23.bvgd@acharya.ac.in',role:'Student',club:'Emerald',color:'Green'},
+    {name:'Indra Reddy',email:'boreddyj.23.bvgd@acharya.ac.in',role:'Student',club:'Amber',color:'Orange'}
+  ];
+  const clubThemeColors={Blue:'#2f5ea8',Yellow:'#a87900',Red:'#b94655',Green:'#2a8c6b',Orange:'#d9783d',Purple:'#6f4ca5'};
   let saved = new Set([1, 6]);
   let role = 'student';
+  let currentUser = null;
   let onlineMessages = [];
   let hasLoadedMessages = false;
   let activeFilter = 'all';
@@ -273,17 +293,19 @@
   function go(page) { $$('.page').forEach(p=>p.classList.toggle('active', p.id===page)); $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===page)); window.scrollTo({top:0,behavior:'smooth'}); }
   function toast(msg) { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
   function openEvent(id) { const e=events.find(x=>x.id===id); $('#modalTitle').textContent=e.title; $('#modalDesc').textContent=e.desc; $('#modalDate').textContent=`${e.day} ${e.month} · ${e.time}`; $('#modalHost').textContent=e.host; $('#modalVenue').textContent=e.venue; $('#modalSpots').textContent=e.spots; $('#modalAction').textContent=saved.has(e.id)?'You’re registered ✓':'Register for this event'; $('#modalAction').dataset.event=id; $('#modalBackdrop').classList.add('open'); }
+  function applyClubTheme(color){ const accent=clubThemeColors[color]||clubThemeColors.Purple; document.documentElement.style.setProperty('--plum',accent); document.documentElement.style.setProperty('--plum-dark',accent); }
   function setRole(nextRole) {
     role=nextRole;
+    const club=currentUser?.club||'Amethyst';
     const info={
-      student:{label:'Student · Amethyst Club · ID ASD-2418',title:'Student dashboard',copy:'Browse the full Design Week programme, register for events, follow Amethyst activities, and request a club swap.',actions:['Register events','View club','Request swap']},
-      faculty:{label:'Faculty · Amethyst Club',title:'Faculty dashboard',copy:'Supervise your club’s programme, track participation, and publish updates to your club or all clubs.',actions:['Attendance','Club activities','Send update']},
-      captain:{label:'Club Captain · Amethyst Club',title:'Captain dashboard',copy:'Manage Amethyst members, review club-swap requests, and approve cross-club participation.',actions:['2 swap requests','Member list','Approve access']},
+      student:{label:`Student · ${club} Club`,title:'Student dashboard',copy:`Browse the full Design Week programme, register for events, follow ${club} activities, and request a club swap.`,actions:['Register events','View club','Request swap']},
+      faculty:{label:`Faculty · ${club} Club`,title:'Faculty dashboard',copy:`Supervise ${club} activities, track participation, and publish updates to your club or all clubs.`,actions:['Attendance','Club activities','Send update']},
+      captain:{label:`Club Captain · ${club} Club`,title:'Captain dashboard',copy:`Manage ${club} members, review club-swap requests, and approve cross-club participation.`,actions:['2 swap requests','Member list','Approve access']},
       committee:{label:'Design Week Committee',title:'Committee dashboard',copy:'Coordinate all six clubs, manage the Design Week programme, and send official announcements to every club.',actions:['6 clubs','8 events','Publish notice']}
     }[nextRole];
     $('#profileRole').textContent=info.label; $('#rolePanel').innerHTML=`<h3>${info.title}</h3><p>${info.copy}</p><div class="role-actions">${info.actions.map(a=>`<span class="tag">${a}</span>`).join('')}</div>`;
     $('#staffComposer').classList.toggle('visible',nextRole!=='student'); $('#studentNotice').style.display=nextRole==='student'?'flex':'none';
-    $('#studentSwap').style.display=nextRole==='student'?'block':'none'; $('#clubUserRole').textContent=nextRole==='student'?'Student · Amethyst Club':'Faculty · Amethyst Club';
+    $('#studentSwap').style.display=nextRole==='student'?'block':'none'; $('#clubUserRole').textContent=`${info.label}`; if(currentUser) { applyClubTheme(currentUser.color); renderClubSpace(currentUser.club); }
     renderAnnouncements();
     toast(`${info.title} enabled`);
   }
@@ -293,18 +315,16 @@
   function logout() {
     localStorage.removeItem('acharyaDesignWeekUser'); $('#avatarMenu').classList.remove('open'); $('#appShell').classList.add('app-hidden'); $('#loginScreen').style.display='grid'; $('#username').value=''; $('#loginError').textContent=''; $('#profileName').textContent='Aarav Sharma'; $('#clubUserName').textContent='Aarav Sharma'; setAvatarInitials('AS'); toast('You have been logged out');
   }
-  function openSession(username,nextRole) {
+  function openSession(username,user) {
     localStorage.setItem('acharyaDesignWeekUser',username);
-    const local=username.split('@')[0]; const parts=local.split(/[._-]/).filter(Boolean); const suffixes=['bvam','bvgd','bvisd','bvpd']; const nameParts=suffixes.includes(parts[parts.length-1])?parts.slice(0,-1):parts; const displayName=nameParts.map(x=>x.replace(/^./,c=>c.toUpperCase())).join(' ')||'Acharya User'; const initials=(nameParts.length>1?nameParts[0][0]+nameParts[nameParts.length-1][0]:nameParts[0]?.[0]||'A').toUpperCase();
-    $('#profileName').textContent=displayName; $('#clubUserName').textContent=displayName; setAvatarInitials(initials); $('#loginScreen').style.display='none'; $('#appShell').classList.remove('app-hidden'); setRole(nextRole); go('home');
+    currentUser=user; const displayName=user.name; const initials=displayName.split(/\s+/).filter(Boolean).map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    $('#profileName').textContent=displayName; $('#clubUserName').textContent=displayName; setAvatarInitials(initials); $('#loginScreen').style.display='none'; $('#appShell').classList.remove('app-hidden'); setRole(user.role.toLowerCase()); go('home');
   }
   function signIn() {
     const username=$('#username').value.trim().toLowerCase();
-    const student=/^[a-z0-9._-]+\.(bvam|bvgd|bvisd|bvpd)@acharya\.ac\.in$/i;
-    const faculty=/^[a-z0-9._-]+@acharya\.ac\.in$/i;
-    const nextRole=student.test(username)?'student':faculty.test(username)?'faculty':null;
-    if(!nextRole){ $('#loginError').textContent='Use a valid Student or Faculty Acharya username.'; return; }
-    openSession(username,nextRole);
+    const matchedUser=importedUsers.find(u=>u.email.trim().toLowerCase()===username);
+    if(!matchedUser){ $('#loginError').textContent='This Acharya email is not present in the approved Excel directory.'; return; }
+    openSession(username,matchedUser);
   }
   $('#loginBtn').addEventListener('click',signIn);
   $('#username').addEventListener('keydown',e=>{ if(e.key==='Enter') signIn(); });
@@ -324,8 +344,20 @@
   $('#modalAction').addEventListener('click',()=>{ const id=Number($('#modalAction').dataset.event); if(!saved.has(id)){saved.add(id);renderAll();$('#modalAction').textContent='You’re registered ✓';toast('You’re registered — see you there!');} else { toast('You’re already registered'); } });
   $('#requestSwap').addEventListener('click',()=>{ const target=$('#swapTarget').value; if(target==='Choose a club') return toast('Choose a club to request a swap'); toast(`Swap request sent to the ${target} and Amethyst captains`); $('#requestSwap').textContent='Request sent ✓'; $('#requestSwap').disabled=true; });
   $('#sendMessage').addEventListener('click',async()=>{ const text=$('#message').value.trim(); if(role==='student') return toast('Only Faculty and authorised staff can send updates'); if(!text) return toast('Write a message first'); const audience=$('#audience').value; const button=$('#sendMessage'); button.disabled=true; try{ const response=await fetch(`${SUPABASE_URL}/rest/v1/announcements`,{method:'POST',headers:{...SUPABASE_HEADERS,'Prefer':'return=representation'},body:JSON.stringify({author:$('#profileName').textContent,audience,message:text})}); if(!response.ok) throw new Error('Unable to send announcement'); $('#message').value=''; await loadMessages(); toast(`Update sent to ${audience}`); }catch(error){ toast('Could not send update. Check Supabase setup.'); } finally { button.disabled=false; } });
+  const clubActivities={
+    Cobalt:{workshops:['Material Futures · 02 Nov, 10:00 AM'],competitions:['Fashion Show · 06 Nov, 06:30 PM'],talks:['The Design of Attention · 02 Nov, 03:00 PM']},
+    Ruby:{workshops:['Light, Shadow, Story · 04 Nov, 09:30 AM'],competitions:['Fashion Show · 06 Nov, 06:30 PM'],talks:['Design Critique · 03 Nov, 02:00 PM']},
+    Martian:{workshops:['Rapid Prototyping · 03 Nov, 10:00 AM'],competitions:['Fashion Show · 06 Nov, 06:30 PM'],talks:['Designing for Belonging · 04 Nov, 02:00 PM']},
+    Emerald:{workshops:['Material Lab · 03 Nov, 09:30 AM'],competitions:['Reframe the Ordinary · 03 Nov, 11:00 AM'],talks:['Expert Talk · 05 Nov, 02:00 PM']},
+    Amber:{workshops:['Threads of Tomorrow · 05 Nov, 10:00 AM'],competitions:['Fashion Show · 06 Nov, 06:30 PM'],talks:['Textile Futures · 04 Nov, 03:00 PM']},
+    Amethyst:{workshops:['Material Futures · 02 Nov, 10:00 AM'],competitions:['Six Clubs, One Brief · 05 Nov, 04:00 PM','Fashion Show · 06 Nov, 06:30 PM'],talks:['Designing for Belonging · 04 Nov, 02:00 PM']}
+  };
+  function renderClubSpace(clubName){
+    const records=importedUsers.filter(u=>u.club===clubName); const captain=records.find(u=>u.role==='Captain'); const faculty=records.filter(u=>u.role==='Faculty'); const members=records.filter(u=>u.role.toLowerCase()==='student'); const color=records[0]?.color||currentUser?.color||'Purple'; const activities=clubActivities[clubName]||{workshops:[],competitions:[],talks:[]};
+    $('#clubList').innerHTML=`<div class="club-card"><div class="club-line"><h3><span class="club-dot ${clubName.toLowerCase()}"></span>${escapeHtml(clubName)}</h3><span class="member-count">Your club</span></div><div class="club-stats"><div class="stat"><b>${members.length}</b><span>imported students</span></div><div class="stat"><b>${captain?'1':'0'}</b><span>captain</span></div><div class="stat"><b>${faculty.length}</b><span>faculty</span></div></div><div class="club-section-label">Club captain</div><div class="people-list"><span class="person">${captain?escapeHtml(captain.name):'Not listed'}</span></div><div class="club-section-label">Faculty members</div><div class="people-list">${faculty.length?faculty.map(f=>`<span class="person">${escapeHtml(f.name)}</span>`).join(''):'<span class="person more">Not listed</span>'}</div><div class="club-section-label">Club members from Excel</div><div class="people-list">${members.length?members.map(m=>`<span class="person">${escapeHtml(m.name)}</span>`).join(''):'<span class="person more">No student records listed</span>'}</div><div class="club-section-label">Activities by ${escapeHtml(clubName)}</div><div class="club-activity"><b>WORKSHOPS</b><span>${activities.workshops.join('<br>')}</span></div><div class="club-activity"><b>COMPETITIONS</b><span>${activities.competitions.join('<br>')}</span></div><div class="club-activity"><b>EXPERT TALKS</b><span>${activities.talks.join('<br>')}</span></div></div>`;
+  }
   const storedUsername=localStorage.getItem('acharyaDesignWeekUser');
-  if(storedUsername){ const storedStudent=/^[a-z0-9._-]+\.(bvam|bvgd|bvisd|bvpd)@acharya\.ac\.in$/i.test(storedUsername); openSession(storedUsername,storedStudent?'student':'faculty'); }
+  if(storedUsername){ const storedUser=importedUsers.find(u=>u.email.trim().toLowerCase()===storedUsername); if(storedUser) openSession(storedUsername,storedUser); else localStorage.removeItem('acharyaDesignWeekUser'); }
   loadMessages();
   setInterval(()=>{ if(!document.hidden) loadMessages(); },5000);
   const clubs=[
@@ -338,6 +370,7 @@
   ];
   const myClub=clubs.find(c=>c.name==='Amethyst');
   $('#clubList').innerHTML=`<div class="club-card"><div class="club-line"><h3><span class="club-dot ${myClub.color}"></span>${myClub.name}</h3><span class="member-count">Your club</span></div><div class="club-stats"><div class="stat"><b>${myClub.members}</b><span>members</span></div><div class="stat"><b>1</b><span>captain</span></div><div class="stat"><b>4</b><span>faculty</span></div></div><div class="club-section-label">Club captain</div><div class="people-list"><span class="person">${myClub.captain}</span></div><div class="club-section-label">Faculty members</div><div class="people-list">${myClub.faculty.map(f=>`<span class="person">${f}</span>`).join('')}</div><div class="club-section-label">Club members</div><div class="people-list">${myClub.membersList.map(m=>`<span class="person">${m}</span>`).join('')}<span class="person more">+ 89 more members</span></div><div class="club-section-label">Activities by Amethyst</div><div class="club-activity"><b>WORKSHOPS</b><span>${myClub.workshops.join('<br>')}</span></div><div class="club-activity"><b>COMPETITIONS</b><span>${myClub.competitions.join('<br>')}</span></div><div class="club-activity"><b>EXPERT TALKS</b><span>${myClub.talks.join('<br>')}</span></div></div>`;
+  renderClubSpace(currentUser?.club||'Amethyst');
   renderAll();
 </script>
 </body>
