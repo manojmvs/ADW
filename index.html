@@ -244,6 +244,7 @@
   let saved = new Set([1, 6]);
   let role = 'student';
   let onlineMessages = [];
+  let hasLoadedMessages = false;
   let activeFilter = 'all';
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
@@ -259,7 +260,7 @@
     try{
       const response=await fetch(`${SUPABASE_URL}/rest/v1/announcements?select=id,author,audience,message,created_at&order=created_at.desc`,{headers:SUPABASE_HEADERS});
       if(!response.ok) throw new Error('Unable to load announcements');
-      onlineMessages=await response.json(); renderAnnouncements();
+      const incoming=await response.json(); const knownIds=new Set(onlineMessages.map(m=>m.id)); const newMessage=incoming.some(m=>!knownIds.has(m.id)); onlineMessages=incoming; renderAnnouncements(); if(hasLoadedMessages&&newMessage&&role==='student') toast('New Faculty message received'); hasLoadedMessages=true;
     }catch(error){ onlineMessages=[]; renderAnnouncements(); }
   }
   function renderAnnouncements(){
@@ -326,6 +327,7 @@
   const storedUsername=localStorage.getItem('acharyaDesignWeekUser');
   if(storedUsername){ const storedStudent=/^[a-z0-9._-]+\.(bvam|bvgd|bvisd|bvpd)@acharya\.ac\.in$/i.test(storedUsername); openSession(storedUsername,storedStudent?'student':'faculty'); }
   loadMessages();
+  setInterval(()=>{ if(!document.hidden) loadMessages(); },5000);
   const clubs=[
     {name:'Cobalt', color:'cobalt', members:'95', captain:'Ishaan Mehta', faculty:'Dr. Kavya Rao', activities:['Material Futures','Open Studio','Design Sprint']},
     {name:'Ruby', color:'ruby', members:'95', captain:'Ananya Nair', faculty:'Prof. Ritu Das', activities:['Light, Shadow, Story','Typography Lab','Talk Series']},
