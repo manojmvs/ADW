@@ -240,7 +240,7 @@
   const SUPABASE_URL='https://wpysolqyfmxrgtyloesu.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dnfthenoS65ZnGyNL44GRA_fG2XZ2lq';
   const SUPABASE_HEADERS={'apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,'Content-Type':'application/json'};
-  const importedUsers=[
+  let importedUsers=[
     {name:'Manoj',email:'manoj2883@acharya.ac.in',role:'Faculty',club:'Cobalt',color:'Blue'},
     {name:'Akshay',email:'akshay2876@acharya.ac.in',role:'Faculty',club:'Martian',color:'Yellow'},
     {name:'R Surya',email:'surya_1103@acharya.ac.in',role:'Faculty',club:'Ruby',color:'Red'},
@@ -322,6 +322,15 @@
   async function lookupDirectoryUser(email){
     try{ const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/lookup_directory_user`,{method:'POST',headers:SUPABASE_HEADERS,body:JSON.stringify({lookup_email:email})}); if(!response.ok) return null; const rows=await response.json(); return rows[0]||null; }catch(error){ return null; }
   }
+  async function loadDirectory(){
+    try{
+      const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/list_directory_users`,{method:'POST',headers:SUPABASE_HEADERS,body:'{}'});
+      if(!response.ok) return;
+      const rows=await response.json(); if(!Array.isArray(rows)||!rows.length) return;
+      importedUsers=rows;
+      if(currentUser){ const refreshed=rows.find(u=>u.email.trim().toLowerCase()===currentUser.email.trim().toLowerCase()); if(refreshed){ currentUser=refreshed; $('#profileName').textContent=refreshed.name; $('#clubUserName').textContent=refreshed.name; $('#profileRole').textContent=refreshed.role==='Committee'?'Design Week Committee · ASD':`${refreshed.role} · ${refreshed.club} Club`; applyClubTheme(refreshed.color); if(refreshed.role==='Committee'){ $('#profileClubSection').style.display='none'; renderCommitteeClubSpaces(); } else { $('#profileClubSection').style.display='block'; renderClubSpace(refreshed.club); } } }
+    }catch(error){ /* Keep the last known directory if the network is temporarily unavailable. */ }
+  }
   async function signIn() {
     const username=$('#username').value.trim().toLowerCase();
     const button=$('#loginBtn'); button.disabled=true; const matchedUser=await lookupDirectoryUser(username)||importedUsers.find(u=>u.email.trim().toLowerCase()===username); button.disabled=false;
@@ -364,8 +373,10 @@
   }
   async function restoreSession(){ const storedUsername=localStorage.getItem('acharyaDesignWeekUser'); if(!storedUsername) return; const storedUser=await lookupDirectoryUser(storedUsername)||importedUsers.find(u=>u.email.trim().toLowerCase()===storedUsername); if(storedUser) openSession(storedUsername,storedUser); else localStorage.removeItem('acharyaDesignWeekUser'); }
   restoreSession();
+  loadDirectory();
   loadMessages();
   setInterval(()=>{ if(!document.hidden) loadMessages(); },5000);
+  setInterval(()=>{ if(!document.hidden) loadDirectory(); },10000);
   const clubs=[
     {name:'Cobalt', color:'cobalt', members:'95', captain:'Ishaan Mehta', faculty:'Dr. Kavya Rao', activities:['Material Futures','Open Studio','Design Sprint']},
     {name:'Ruby', color:'ruby', members:'95', captain:'Ananya Nair', faculty:'Prof. Ritu Das', activities:['Light, Shadow, Story','Typography Lab','Talk Series']},
